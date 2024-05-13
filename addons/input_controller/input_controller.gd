@@ -2,6 +2,8 @@
 class_name InputController
 extends Node
 
+signal input_detected(event: InputEvent, action: String, input_type: InputType)
+
 enum InputType {
 	ACTIVE,
 	TAP,
@@ -11,8 +13,6 @@ enum InputType {
 	HOLD,
 	CANCEL,
 }
-
-signal input_detected(event: InputEvent, action: String, input_type: InputType)
 
 # These values are used to determine the InputType of an InputEvent; all values are in seconds.
 @export_group("Input Timing")
@@ -57,15 +57,51 @@ signal input_detected(event: InputEvent, action: String, input_type: InputType)
 # a child node, or a sibling node that appears below it in the scene tree.
 @export var set_input_as_handled: bool = true
 
-# Used to determine the InputType of an action.
-var action_timer: Dictionary = {}
-var action_history: Dictionary = {}
+# Used to map input handler methods to their respective settings.
+var settings: Dictionary = {
+	"_input": ui_inputs,
+	"_unhandled_shortcuts": shortcut_inputs,
+	"_unhandled_key_input": unhandled_key_inputs,
+	"_unhandled_input": unhandled_inputs,
+}
 
-# Used to loop through each configuration and cache its list of actions.
-var ui_input_actions: Array[StringName] = []
-var shortcut_input_actions: Array[StringName] = []
-var unhandled_key_input_actions: Array[StringName] = []
-var unhandled_input_actions: Array[StringName] = []
+# RegEx pattern to find a "*" character in a string and, if present, capture the text around it.
+var wildcard: RegEx = RegEx.create_from_string("(.+)?\\*(.+)?")
+
+# Used to determine the InputType and current state of each action.
+var _actions: Dictionary = {}
+
+# Used to determine which actions should be handled by which input handler method.
+var _handlers: ActionHandlerMap = ActionHandlerMap.new()
+
+
+func _ready() -> void:
+	map_actions_to_handlers()
+
+
+func _input(event: InputEvent) -> void:
+	if _handlers.has_actions("_input"):
+		_process_input(event, find_action(event, _handlers.get_actions("_input")))
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if _handlers.has_actions("_unhandled_input"):
+		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_input")))
+
+
+func _unhandled_key_input(event: InputEvent) -> void:
+	if _handlers.has_actions("_unhandled_key_input"):
+		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_key_input")))
+
+
+func _unhandled_shortcuts(event: InputEvent) -> void:
+	if _handlers.has_actions("_unhandled_shortcuts"):
+		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_shortcuts")))
+
+
+# Wrapper function for Time.get_ticks_msec(); returns the value as a float instead of an integer.
+func get_ticks() -> float:
+	return float(Time.get_ticks_msec()) / 1000
 
 
 # Determine if any action in a given list matches a given event.
@@ -73,7 +109,7 @@ var unhandled_input_actions: Array[StringName] = []
 # @param event InputEvent: The event to check each action against.
 # @param actions Array[StringName]: A list of actions to check.
 # @return InputControllerAction: The first action that matches the event, or "" if no match found.
-func find_action(event: InputEvent, actions: Array[StringName]) -> String:
+func find_action(event: InputEvent, actions: Array[StringName]) -> StringName:
 	for action in actions:
 		if event.is_action(action):
 			return action
@@ -81,73 +117,96 @@ func find_action(event: InputEvent, actions: Array[StringName]) -> String:
 	return ""  # No match found.
 
 
-# Parse an InputEvent handler configuration array and return a list of input actions that match. If
-# config array contains a "*" wildcard, this method will return the value of InputMap.get_actions().
-# If config is an empty array, this method will return an empty array. If config contains any values
-# that end in "*" (e.g. "ui_*", "player_*"), this method will include all actions that start with
-# that prefix. All other config values will be treated as an exact match, so if the action exists,
-# it will be included in the results. 
+# Add each input action in a given list (all actions from InputMap by default) to one of the four
+# handler methods (_input, _unhandled_shortcuts, _unhandled_key_input, and _unhandled_input) based
+# on settings.
 # 
-# @param config Array[String]: A list of input action names, prefixes, or the "*" wildcard.
-# @param actions: Array[StringName] A list of available actions, to avoid duplication.
-# @return Array[String]: A list of input actions, based on the given config array. 
-func get_actions_for_input_handler(
-		config: Array[String],
-		actions: Array[StringName]
-	) -> Array[StringName]:
-	if !config:
-		return []
-
-	var results: Array[StringName]
-	
-	if "*" in config:
-		# Config contains a wildcard, so include all actions in results and clear the actions array.
-		results = actions.duplicate()
-		actions = []
-		return results
-	
-	for action in config:
-		if "*" == action.right(1):
-			# Config ends with a wildcard, so include any actions that start with this prefix.
-			var prefix: String = action.trim_suffix("*")
-			var prefixed_actions: Array[StringName] = actions.filter(
-				func(a): return a.trim_prefix(prefix) != a)
+# @param available_actions Array[StringName]: Defaults to the value of InputMap.get_actions().
+func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get_actions()) -> void:
+	# Initialize the action arrays in _handlers.
+	_handlers.clear()
+	 
+	# Loop through each of the input handler methods in settings.
+	for method in settings.keys():
+		# End the loop early if no actions are available.
+		if !available_actions:
+				break
+		
+		# Loop through each of the settings for the current method.
+		for setting in settings[method]:
+			# End the loop early if no actions are available.
+			if !available_actions:
+				break
 			
-			for prefixed_action in prefixed_actions:
-				if !results.has(prefixed_action):
-					# Push prefixed action to results and remove it from actions.
-					results.push_back(actions.pop_at(actions.find(prefixed_action)))
-		else:
-			# Config is a specific action name, so include it if valid and not already in results. 
-			if actions.has(action) and !results.has(action):
-				# Push action to results and remove it from actions.
-				results.push_back(actions.pop_at(actions.find(action)))
-	
-	return results
+			# If the current setting contains only the wildcard character,
+			if "*" == setting:
+				# ...loop through a copy of available_actions, so we can modify the original.
+				for action in available_actions.duplicate():
+					# ...then add each action as a key to the _actions dictionary,
+					_actions[action] = ActionState.new()
+					# ...assign it to the _handlers dictionary under the current method,
+					_handlers.add_action(method, action)
+					# ...and remove it from the list of available actions.
+					available_actions.pop_at(available_actions.find(action))
+				
+				# End the loop early, since there are no more actions available.
+				break
+			
+			# Check if the current setting contains a "*" wildcard character.
+			var matches: RegExMatch = wildcard.search(setting)
+			
+			# If the current setting contains a wildcard,
+			if matches:
+				# ...grab the strings to the left and right of the wildcard,
+				var prefix: String = matches.strings[1]  # Can be an empty string.
+				var suffix: String = matches.strings[2]  # Can be an empty string.
+				
+				# ...then loop through a copy of available_actions, so we can modify the original.
+				for action in available_actions.duplicate():
+					var has_prefix: bool = action.trim_prefix(prefix) != action
+					var has_suffix: bool = action.trim_suffix(suffix) != action
+					
+					# If the action starts with prefix and ends with suffix,
+					if (!prefix or has_prefix) and (!suffix or has_suffix):
+						# ...add it as a key to the _actions dictionary,
+						_actions[action] = ActionState.new()
+						# ...assign it to the _handlers dictionary under the current method,
+						_handlers.add_action(method, action)
+						# ...and remove it from the list of available actions.
+						available_actions.pop_at(available_actions.find(action))
+			
+			# If the current setting does not contain a wildcard and matches an available action,
+			elif setting in available_actions:
+				# ...add it as a key to the _actions dictionary,
+				_actions[setting] = ActionState.new()
+				# ...assign it to the _handlers dictionary under the current method,
+				_handlers.add_action(method, setting)
+				# ...and remove it from the list of available actions.
+				available_actions.pop_at(available_actions.find(setting))
 
 
 # Determine the InputType of a given InputEvent. This method is private because it updates the
-# internal state of the InputController, and should only be called when certain conditions are met.
+# internal state of the InputController. It should only be called when certain conditions are met.
 # 
 # This method is a coroutine and, as such, must be called using the `await` keyword. See also:
 # https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html#awaiting-for-signals-or-coroutines
 # 
-# @param action String: Action that triggered the InputEvent in question.
-# @param delta float: Time (in seconds) between the action being pressed and released.
-# @return InputType: The type of input, based on the duration of it being pressed.
-func _determine_input_type(action: String, delta: float) -> InputType:
-	if delta <= max_button_tap and action_history.has(action):
-		action_history.erase(action)
+# @param action ActionState: Current state of the action that triggered the InputEvent.
+# @param delta float: Duration (in seconds) of the action input hold before it was released.
+# @return InputType: The type of input, based on the duration of the action being held.
+func _determine_input_type(action_state: ActionState, delta: float) -> InputType:
+	if delta <= max_button_tap and action_state.prev_activated_at > 0:
+		action_state.prev_activated_at = 0
 		return InputType.DOUBLE_TAP
 	
 	if delta <= max_button_tap:
-		# Cache the current tap in action_history and allow time for a subsequent tap.
-		action_history[action] = Time.get_ticks_msec()
+		# Cache the current tap in prev_activated_at and allow time for a subsequent tap.
+		action_state.prev_activated_at = Time.get_ticks_msec()
 		await get_tree().create_timer(max_button_tap + max_double_tap_delay).timeout
 		
-		# If action_history hasn't been cleared yet, it was a single tap.
-		if action_history.has(action): 
-			action_history.erase(action)
+		# If prev_activated_at hasn't been cleared yet, it was a single tap.
+		if action_state.prev_activated_at: 
+			action_state.prev_activated_at = 0
 			return InputType.TAP
 
 		# Otherwise, it was a double tap and has already been resolved by the second InputEvent.
@@ -162,139 +221,74 @@ func _determine_input_type(action: String, delta: float) -> InputType:
 	return InputType.HOLD
 
 
-# Wrapper function for Time.get_ticks_msec(); returns the value as a float instead of an integer.
-func get_ticks() -> float:
-	return float(Time.get_ticks_msec()) / 1000
-
-
-# Track when an action was pressed. This enables _handle_action_released() to determine the input
-# duration when the action is released. This method is private because it updates the internal
-# state of the InputController, and should only be called when certain conditions are met.
-# 
-# @param event InputEvent: The event that triggered the action.
-# @param action String: The action to handle.
-func _handle_action_pressed(event: InputEvent, action: String) -> void:
-	if action_timer.has(action):
-		return  # This action is already being processed.
-	
-	action_timer[action] = get_ticks()
-	input_detected.emit(event, action, InputType.ACTIVE)
-
-
-# Determine the type of InputEvent action, then emit an "input_detected" signal with the result.
-# This method is private because it updates the internal state of the InputController, and should
-# only be called when certain conditions are met.
-# 
-# @param event InputEvent: The event that triggered the action.
-# @param action String: The action to handle.
-func _handle_action_released(event: InputEvent, action: String) -> void:
-	if !action_timer.has(action):
-		return  # This action was not handled by _handle_action_pressed().
-	
-	var previous: float = action_timer[action]
-	action_timer.erase(action)  # This must happen before calling _get_input_type().
-	
-	var delta: float = get_ticks() - previous
-	var input_type: InputType = await _determine_input_type(action, delta)
-	input_detected.emit(event, action, input_type)
-
-
-# Called when there is an input event. The input event propagates up through the node tree until a
-# node consumes it.
-# 
-# It is only called if input processing is enabled, which is done automatically if this method is
-# overridden, and can be toggled with set_process_input(). To consume the input event and stop it
-# propagating further to other nodes, get_viewport().set_input_as_handled() can be called.
-# 
-# For gameplay input, _unhandled_input() and _unhandled_key_input() are usually a better fit as they
-# allow the GUI to intercept the events first.
-# 
-# NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
-func _input(event: InputEvent) -> void:
-	if ui_input_actions:
-		_process_input(event, find_action(event, ui_input_actions))
-
-
-# Process a given InputEvent action and, if self.set_input_as_handled property is true, call
+# Process a given InputEvent action and, if InputController.set_input_as_handled is true, call
 # get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
 # 
 # @param event InputEvent: The event that triggered the action.
-# @param action String: The action to process.
+# @param action StringName: The action to process.
 # @return bool: True if the event was processed; otherwise, false.
-func _process_input(event: InputEvent, action: String) -> bool:
-	if !action:
+func _process_input(event: InputEvent, action: StringName) -> bool:
+	if !action or !_actions.has(action):
 		return false  # No action to process.
 	
-	if Input.is_action_just_pressed(action):
-		_handle_action_pressed(event, action)
-	elif Input.is_action_just_released(action):
-		_handle_action_released(event, action)
+	var action_state: ActionState = _actions[action]
 	
+	# If the action just started, set last_activated_at and notify event listeners.
+	if Input.is_action_just_pressed(action) and !action_state.is_active:
+		action_state.last_activated_at = get_ticks()
+		input_detected.emit(event, action, InputType.ACTIVE)
+	
+	# If the action just ended, determine the InputType and notify event listeners.
+	elif Input.is_action_just_released(action) and action_state.is_active:
+		var delta: float = get_ticks() - action_state.last_activated_at
+		var input_type: InputType
+		action_state.last_activated_at = 0  # This must happen before calling _get_input_type().
+		input_type = await _determine_input_type(action_state, delta)
+		input_detected.emit(event, action, input_type)
+	
+	# If configured to do so, prevent the InputEvent from propagating to other nodes.
 	if set_input_as_handled:
 		get_viewport().set_input_as_handled()
 	
-	return true
+	return true  # Action was processed.
 
 
-func _ready() -> void:
-	var actions: Array[StringName] = InputMap.get_actions()
+# This class is used in the InputController._actions dictionary to hold the state of each action.
+class ActionState:
+	var is_active: bool:
+		get: return last_activated_at > 0
+	var last_activated_at: float = 0
+	var prev_activated_at: float = 0
+
+
+# This class is used to store a list of input actions for each input handler method.
+class ActionHandlerMap:
+	var _input: Array[StringName] = []
+	var _unhandled_shortcuts: Array[StringName] = []
+	var _unhandled_key_input: Array[StringName] = []
+	var _unhandled_input: Array[StringName] = []
 	
-	ui_input_actions = get_actions_for_input_handler(ui_inputs, actions)
-	shortcut_input_actions = get_actions_for_input_handler(shortcut_inputs, actions)
-	unhandled_key_input_actions = get_actions_for_input_handler(unhandled_key_inputs, actions)
-	unhandled_input_actions = get_actions_for_input_handler(unhandled_inputs, actions)
-
-
-# Called when an InputEvent hasn't been consumed by _input() or any GUI Control item. It is
-# called after _shortcut_input() and after _unhandled_key_input(). The input event propagates up
-# through the node tree until a node consumes it.
-# 
-# It is only called if input processing is enabled, which is done automatically if this method is
-# overridden, and can be toggled with set_process_input(). To consume the input event and stop it
-# propagating further to other nodes, get_viewport().set_input_as_handled() can be called.
-# 
-# For gameplay input, this method is usually a better fit than _input(), as GUI events need a higher
-# priority. For keyboard shortcuts, consider using _shortcut_input() instead, as it is called before
-# this method. Finally, to handle keyboard events, consider using _unhandled_key_input() for
-# performance reasons.
-# 
-# NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
-func _unhandled_input(event: InputEvent) -> void:
-	if unhandled_input_actions:
-		_process_input(event, find_action(event, unhandled_input_actions))
-
-
-# Called when an InputEventKey hasn't been consumed by _input() or any GUI Control item. It is
-# called after _shortcut_input() but before _unhandled_input(). The input event propagates up
-# through the node tree until a node consumes it.
-# 
-# It is only called if input processing is enabled, which is done automatically if this method is
-# overridden, and can be toggled with set_process_input(). To consume the input event and stop it
-# propagating further to other nodes, get_viewport().set_input_as_handled() can be called.
-# 
-# This method can be used to handle Unicode character input with Alt, Alt + Ctrl, and Alt + Shift
-# modifiers, after shortcuts were handled. For gameplay input, this and _unhandled_input() are
-# usually a better fit than _input(), as GUI events should be handled first. This method also
-# performs better than _unhandled_input(), since unrelated events such as InputEventMouseMotion are
-# automatically filtered. For shortcuts, consider using _shortcut_input() instead.
-# 
-# NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
-func _unhandled_key_input(event: InputEvent) -> void:
-	if unhandled_key_input_actions:
-		_process_input(event, find_action(event, unhandled_key_input_actions))
-
-
-# Called when an InputEventKey or InputEventShortcut hasn't been consumed by _input() or any GUI
-# Control item. It is called before _unhandled_key_input() and _unhandled_input().
-# 
-# It is only called if input processing is enabled, which is done automatically if this method is
-# overridden, and can be toggled with set_process_input(). To consume the input event and stop it
-# propagating further to other nodes, get_viewport().set_input_as_handled() can be called.
-# 
-# This method can be used to handle shortcuts. For generic GUI events, use _input() instead.
-# Gameplay events should usually be handled with _unhandled_input() or _unhandled_key_input().
-# 
-# NOTE: This method is only called if the node is present in the scene tree (i.e. not orphan).
-func _unhandled_shortcuts(event: InputEvent) -> void:
-	if shortcut_input_actions:
-		_process_input(event, find_action(event, shortcut_input_actions))
+	func add_action(method: String, action: StringName) -> void:
+		self.get(method).push_back(action)
+	
+	
+	func clear(method: String = "") -> void:
+		if method:
+			self.get(method).clear()
+		else:
+			_input.clear()
+			_unhandled_shortcuts.clear()
+			_unhandled_key_input.clear()
+			_unhandled_input.clear()
+	
+	
+	func has_actions(method: String) -> bool:
+		return self.get(method).size() > 0
+	
+	
+	func get_actions(method: String) -> Array[StringName]:
+		return self.get(method)
+	
+	
+	func remove_action(method: String, action: StringName) -> void:
+		self.get(method).pop_at(self.get(method).find(action))
