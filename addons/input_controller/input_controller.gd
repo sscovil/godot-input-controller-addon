@@ -14,50 +14,51 @@ enum InputType {
 	CANCEL,
 }
 
-# These values are used to determine the InputType of an InputEvent; all values are in seconds.
-@export_group("Input Timing")
+const ActionHandlerMap = preload("res://addons/input_controller/action_handler_map.gd")
+const ActionState = preload("res://addons/input_controller/action_state.gd")
 
+@export_group("Input Timing")
+## These values are used to determine the InputType of an InputEvent; all values are in seconds.
 @export var max_button_tap: float = 0.2  # Max time for InputType.TAP.
 @export var max_double_tap_delay: float = 0.1  # Max time between taps for InputType.DOUBLE_TAP.
 @export var max_button_press: float = 0.5  # Max time for InputType.PRESS.
 @export var max_long_press: float = 1.0  # Max time for InputType.LONG_PRESS.
 
-# The following are used to identify which actions will be handled by which InputController methods,
-# based on the input event propagation lifecycle explained here:
-# 
-# https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work
 @export_group("Input Handlers")
-
-# By default, all actions that start with "ui_" will be handled by InputController._input(), and
-# all other actions will be handled by InputController._unhandled_input().
-# 
-# The "*" value is used as a wildcard that tells the method to consider any unhandled actions. This
-# can be changed to a list of exact action names (e.g. "ui_left", "ui_right") and/or prefixes (e.g.
-# "ui_*", "player_*").
-# 
-# More information about when to use each of the input event handler methods can be found here:
-# 
-# https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-input
-# https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-key-input
-# https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-shortcut-input
-# https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
+## These values are used to identify which actions will be handled by which InputController
+## methods, based on the input event propagation lifecycle explained here:
+## https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work
+##  
+## By default, all actions that start with "ui_" will be handled by InputController._input(), and
+## all other actions will be handled by InputController._unhandled_input(). This can be customized
+## by changine these settings.
+## 
+## The "*" value is used as a wildcard, so "ui_*" means any action that starts with "ui_"; "*_move"
+## means any action that ends with "_move"; "player_*_attack" means any action that starts with
+## "player_" and ends with "_attack"; and "*" means all remaining unhandled actions.
+## 
+## More information about when to use each of the input event handler methods can be found here:
+## 
+## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
+## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-shortcut-input
+## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-key-input
+## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-input
 @export var ui_inputs: Array[String] = ["ui_*"]
 @export var shortcut_inputs: Array[String] = []
 @export var unhandled_key_inputs: Array[String] = []
 @export var unhandled_inputs: Array[String] = ["*"]
 
 @export_group("Event Propagation")
-
-# If set to true (default value), the InputController will consume InputEvents and stop them from
-# propagating to other nodes by calling get_viewport().set_input_as_handled(). To allow the event
-# to propagate after handling it, set this value to false. You might want to do this if you are only
-# using the InputController for logging, analytics, or some other observational behavior.
-# 
-# NOTE: The InputController will only receive the input event if it has not already been handled by
-# a child node, or a sibling node that appears below it in the scene tree.
+## If set to true (default), the InputController will consume InputEvents and stop them from
+## propagating to other nodes by calling get_viewport().set_input_as_handled(). To allow the event
+## to propagate after handling it, set this value to false. You might want to do this if you are only
+## using the InputController for logging, analytics, or some other observational behavior.
+## 
+## NOTE: The InputController will only receive the input event if it has not already been handled by
+## a child node, or a sibling node that appears below it in the scene tree.
 @export var set_input_as_handled: bool = true
 
-# Used to map input handler methods to their respective settings.
+## Map of input handler method names to their respective settings (defined above).
 var settings: Dictionary = {
 	"_input": ui_inputs,
 	"_unhandled_shortcuts": shortcut_inputs,
@@ -65,13 +66,13 @@ var settings: Dictionary = {
 	"_unhandled_input": unhandled_inputs,
 }
 
-# RegEx pattern to find a "*" character in a string and, if present, capture the text around it.
+## RegEx pattern to find a "*" character in a string and, if present, capture the text around it.
 var wildcard: RegEx = RegEx.create_from_string("(.+)?\\*(.+)?")
 
-# Used to determine the InputType and current state of each action.
+## Collection of ActionState objects keyed by action name, used to track its current state.
 var _actions: Dictionary = {}
 
-# Used to determine which actions should be handled by which input handler method.
+## Object that contains lists of actions that should be handled by each input handler method.
 var _handlers: ActionHandlerMap = ActionHandlerMap.new()
 
 
@@ -99,16 +100,16 @@ func _unhandled_shortcuts(event: InputEvent) -> void:
 		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_shortcuts")))
 
 
-# Wrapper function for Time.get_ticks_msec(); returns the value as a float instead of an integer.
+## Wrapper function for Time.get_ticks_msec() that returns the value in seconds, as a float.
 func get_ticks() -> float:
 	return float(Time.get_ticks_msec()) / 1000
 
 
-# Determine if any action in a given list matches a given event.
-# 
-# @param event InputEvent: The event to check each action against.
-# @param actions Array[StringName]: A list of actions to check.
-# @return InputControllerAction: The first action that matches the event, or "" if no match found.
+## Search a given list of actions and return the first one that matches a given event.
+## 
+## @param event InputEvent: The event to check each action against.
+## @param actions Array[StringName]: A list of actions to check.
+## @return InputControllerAction: The first action that matches the event, or "" if no match found.
 func find_action(event: InputEvent, actions: Array[StringName]) -> StringName:
 	for action in actions:
 		if event.is_action(action):
@@ -117,11 +118,11 @@ func find_action(event: InputEvent, actions: Array[StringName]) -> StringName:
 	return ""  # No match found.
 
 
-# Add each input action in a given list (all actions from InputMap by default) to one of the four
-# handler methods (_input, _unhandled_shortcuts, _unhandled_key_input, and _unhandled_input) based
-# on settings.
-# 
-# @param available_actions Array[StringName]: Defaults to the value of InputMap.get_actions().
+## Add each input action in a given list (or all actions from InputMap by default) to one of the
+## input handler methods (_input, _unhandled_shortcuts, _unhandled_key_input, and _unhandled_input)
+## based on InputController settings.
+## 
+## @param available_actions Array[StringName]: Defaults to the value of InputMap.get_actions().
 func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get_actions()) -> void:
 	# Initialize the action arrays in _handlers.
 	_handlers.clear()
@@ -185,33 +186,41 @@ func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get
 				available_actions.pop_at(available_actions.find(setting))
 
 
-# Determine the InputType of a given InputEvent. This method is private because it updates the
-# internal state of the InputController. It should only be called when certain conditions are met.
-# 
-# This method is a coroutine and, as such, must be called using the `await` keyword. See also:
-# https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html#awaiting-for-signals-or-coroutines
-# 
-# @param action ActionState: Current state of the action that triggered the InputEvent.
-# @param delta float: Duration (in seconds) of the action input hold before it was released.
-# @return InputType: The type of input, based on the duration of the action being held.
+## Determine the InputType of a given InputEvent. This method is private because it updates the
+## internal state of the InputController. It should only be called when certain conditions are met.
+## 
+## This method is a coroutine and, as such, must be called using the `await` keyword. See also:
+## https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html#awaiting-for-signals-or-coroutines
+## 
+## @param action ActionState: Current state of the action that triggered the InputEvent.
+## @param delta float: Duration (in seconds) of the action input hold before it was released.
+## @return InputType: The type of input, based on the duration of the action being held.
 func _determine_input_type(action_state: ActionState, delta: float) -> InputType:
-	if delta <= max_button_tap and action_state.prev_activated_at > 0:
+	# If a previous input for the same action occurred within the max_double_tap_delay limit,
+	# then the two inputs combined are treated as an InputType.DOUBLE_TAP. We need to reset
+	# prev_activated_at, so the previous call will see that and return InputType.CANCEL instead of
+	# erroneously reporting an additional InputType.TAP after it's timeout is finished.
+	if action_state.is_possible_double_tap and delta <= max_double_tap_delay:
 		action_state.prev_activated_at = 0
 		return InputType.DOUBLE_TAP
 	
+	# If the duration of the input is within the max_button_tap limit, it could be the first of two
+	# subsequent taps that are intended to be an InputType.DOUBLE_TAP. To determine that, we need to
+	# cache the current time (using get_ticks() for millisecond precision) and then set a timeout,
+	# to allow a subsequent tap to occur. If it does so within the max_double_tap_delay limit, the
+	# subsequent call will have already reset our cached time and returned InputType.DOUBLE_TAP, so
+	# we should return InputType.CANCEL. If not, we should return InputType.TAP.
 	if delta <= max_button_tap:
-		# Cache the current tap in prev_activated_at and allow time for a subsequent tap.
-		action_state.prev_activated_at = Time.get_ticks_msec()
+		action_state.prev_activated_at = get_ticks()
 		await get_tree().create_timer(max_button_tap + max_double_tap_delay).timeout
 		
-		# If prev_activated_at hasn't been cleared yet, it was a single tap.
 		if action_state.prev_activated_at: 
 			action_state.prev_activated_at = 0
 			return InputType.TAP
-
-		# Otherwise, it was a double tap and has already been resolved by the second InputEvent.
-		return InputType.CANCEL
+		else:
+			return InputType.CANCEL
 	
+	# If we rule out InputType.TAP and InputType.DOUBLE_TAP, the rest is pretty straightforward.
 	if delta <= max_button_press:
 		return InputType.PRESS
 	
@@ -221,12 +230,12 @@ func _determine_input_type(action_state: ActionState, delta: float) -> InputType
 	return InputType.HOLD
 
 
-# Process a given InputEvent action and, if InputController.set_input_as_handled is true, call
-# get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
-# 
-# @param event InputEvent: The event that triggered the action.
-# @param action StringName: The action to process.
-# @return bool: True if the event was processed; otherwise, false.
+## Process a given InputEvent action and, if InputController.set_input_as_handled is true, call
+## get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
+## 
+## @param event InputEvent: The event that triggered the action.
+## @param action StringName: The action to process.
+## @return bool: True if the event was processed; otherwise, false.
 func _process_input(event: InputEvent, action: StringName) -> bool:
 	if !action or !_actions.has(action):
 		return false  # No action to process.
@@ -242,7 +251,7 @@ func _process_input(event: InputEvent, action: StringName) -> bool:
 	elif Input.is_action_just_released(action) and action_state.is_active:
 		var delta: float = get_ticks() - action_state.last_activated_at
 		var input_type: InputType
-		action_state.last_activated_at = 0  # This must happen before calling _get_input_type().
+		action_state.last_activated_at = 0  # Reset this before calling _determine_input_type().
 		input_type = await _determine_input_type(action_state, delta)
 		input_detected.emit(event, action, input_type)
 	
@@ -251,44 +260,3 @@ func _process_input(event: InputEvent, action: StringName) -> bool:
 		get_viewport().set_input_as_handled()
 	
 	return true  # Action was processed.
-
-
-# This class is used in the InputController._actions dictionary to hold the state of each action.
-class ActionState:
-	var is_active: bool:
-		get: return last_activated_at > 0
-	var last_activated_at: float = 0
-	var prev_activated_at: float = 0
-
-
-# This class is used to store a list of input actions for each input handler method.
-class ActionHandlerMap:
-	var _input: Array[StringName] = []
-	var _unhandled_shortcuts: Array[StringName] = []
-	var _unhandled_key_input: Array[StringName] = []
-	var _unhandled_input: Array[StringName] = []
-	
-	func add_action(method: String, action: StringName) -> void:
-		self.get(method).push_back(action)
-	
-	
-	func clear(method: String = "") -> void:
-		if method:
-			self.get(method).clear()
-		else:
-			_input.clear()
-			_unhandled_shortcuts.clear()
-			_unhandled_key_input.clear()
-			_unhandled_input.clear()
-	
-	
-	func has_actions(method: String) -> bool:
-		return self.get(method).size() > 0
-	
-	
-	func get_actions(method: String) -> Array[StringName]:
-		return self.get(method)
-	
-	
-	func remove_action(method: String, action: StringName) -> void:
-		self.get(method).pop_at(self.get(method).find(action))
