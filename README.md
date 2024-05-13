@@ -37,7 +37,7 @@ func _on_input_detected(event: InputEvent, action: String, input_type: InputType
 		InputType.LONG_PRESS:
 			prints(action, "long pressed")
 		InputType.HOLD:
-			prints(action, return "held")
+			prints(action, "held")
 ```
 
 ## Configuration
