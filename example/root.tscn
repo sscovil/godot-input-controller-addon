@@ -1,0 +1,96 @@
+[gd_scene load_steps=20 format=3 uid="uid://bm5fouwp4xs1y"]
+
+[ext_resource type="Script" path="res://example/root.gd" id="1_y0l6f"]
+[ext_resource type="Script" path="res://addons/input_controller/input_controller.gd" id="2_goqi5"]
+[ext_resource type="Texture2D" uid="uid://br1ssf1m72ivy" path="res://example/assets/ctrl-body.png" id="3_14exq"]
+[ext_resource type="Script" path="res://example/controller.gd" id="4_k406c"]
+[ext_resource type="Texture2D" uid="uid://brv5eaewsfap0" path="res://example/assets/ctrl-dpad-up.png" id="5_55237"]
+[ext_resource type="Texture2D" uid="uid://634p56yrv2hk" path="res://example/assets/ctrl-dpad-down.png" id="6_48h2c"]
+[ext_resource type="Texture2D" uid="uid://j3k2pn66whsa" path="res://example/assets/ctrl-dpad-left.png" id="7_aou2e"]
+[ext_resource type="Texture2D" uid="uid://1pkkimb6g216" path="res://example/assets/ctrl-dpad-right.png" id="8_k36kg"]
+[ext_resource type="Texture2D" uid="uid://dcvh2rlcs44s8" path="res://example/assets/ctrl-analog-stick.png" id="9_bw7cr"]
+[ext_resource type="Texture2D" uid="uid://csb3ka2wbiicl" path="res://example/assets/ctrl-button-green.png" id="10_q7lya"]
+[ext_resource type="Texture2D" uid="uid://b45knjalwnwin" path="res://example/assets/ctrl-button-red.png" id="11_37kua"]
+[ext_resource type="Texture2D" uid="uid://h1aowf85fjbj" path="res://example/assets/ctrl-button-blue.png" id="12_dhycm"]
+[ext_resource type="Texture2D" uid="uid://bj55fej2pogsi" path="res://example/assets/ctrl-button-yellow.png" id="13_tpwi1"]
+[ext_resource type="Texture2D" uid="uid://b4g6kv8d3ufmu" path="res://example/assets/ctrl-left-bumper.png" id="14_erukp"]
+[ext_resource type="Texture2D" uid="uid://b27q0qy4sx40h" path="res://example/assets/ctrl-right-bumper.png" id="15_nqech"]
+[ext_resource type="Texture2D" uid="uid://dk1v2gn7bxvoq" path="res://example/assets/ctrl-button-start.png" id="16_71xre"]
+[ext_resource type="Texture2D" uid="uid://5kdevrvnm6cd" path="res://example/assets/ctrl-button-select.png" id="17_es8ll"]
+[ext_resource type="Texture2D" uid="uid://ebnj1u3q8g5h" path="res://example/assets/ctrl-button-power.png" id="18_yk64a"]
+[ext_resource type="Texture2D" uid="uid://b82nhjg24rte1" path="res://example/assets/ctrl-button-touchpad.png" id="19_wrjxu"]
+
+[node name="Root" type="Node2D"]
+script = ExtResource("1_y0l6f")
+
+[node name="InputController" type="Node" parent="."]
+script = ExtResource("2_goqi5")
+
+[node name="Controller" type="Sprite2D" parent="."]
+position = Vector2(512, 350)
+texture = ExtResource("3_14exq")
+script = ExtResource("4_k406c")
+
+[node name="Up" type="Sprite2D" parent="Controller"]
+position = Vector2(-298, -200)
+texture = ExtResource("5_55237")
+
+[node name="Down" type="Sprite2D" parent="Controller"]
+position = Vector2(-300, -96)
+texture = ExtResource("6_48h2c")
+
+[node name="Left" type="Sprite2D" parent="Controller"]
+position = Vector2(-351, -147)
+texture = ExtResource("7_aou2e")
+
+[node name="Right" type="Sprite2D" parent="Controller"]
+position = Vector2(-248, -145)
+texture = ExtResource("8_k36kg")
+
+[node name="LeftStick" type="Sprite2D" parent="Controller"]
+position = Vector2(-173, 60)
+texture = ExtResource("9_bw7cr")
+
+[node name="RightStick" type="Sprite2D" parent="Controller"]
+position = Vector2(164, 60)
+texture = ExtResource("9_bw7cr")
+
+[node name="GreenButton" type="Sprite2D" parent="Controller"]
+position = Vector2(293, -83)
+texture = ExtResource("10_q7lya")
+
+[node name="RedButton" type="Sprite2D" parent="Controller"]
+position = Vector2(354, -155)
+texture = ExtResource("11_37kua")
+
+[node name="BlueButton" type="Sprite2D" parent="Controller"]
+position = Vector2(227, -151)
+texture = ExtResource("12_dhycm")
+
+[node name="YellowButton" type="Sprite2D" parent="Controller"]
+position = Vector2(291, -217)
+texture = ExtResource("13_tpwi1")
+
+[node name="LeftBumper" type="Sprite2D" parent="Controller"]
+position = Vector2(-310, -302)
+texture = ExtResource("14_erukp")
+
+[node name="RightBumper" type="Sprite2D" parent="Controller"]
+position = Vector2(312, -302)
+texture = ExtResource("15_nqech")
+
+[node name="StartButton" type="Sprite2D" parent="Controller"]
+position = Vector2(144, -245)
+texture = ExtResource("16_71xre")
+
+[node name="SelectButton" type="Sprite2D" parent="Controller"]
+position = Vector2(-148, -245)
+texture = ExtResource("17_es8ll")
+
+[node name="PowerButton" type="Sprite2D" parent="Controller"]
+position = Vector2(-3, -16)
+texture = ExtResource("18_yk64a")
+
+[node name="TouchPad" type="Sprite2D" parent="Controller"]
+position = Vector2(-1, -230)
+texture = ExtResource("19_wrjxu")
