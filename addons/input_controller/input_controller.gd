@@ -2,8 +2,6 @@
 class_name InputController
 extends Node
 
-const DEFAULT_EVENT_HANDLER = "_unhandled_input"
-
 enum InputType {
 	ACTIVE,
 	TAP,
