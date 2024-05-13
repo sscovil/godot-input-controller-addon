@@ -67,6 +67,7 @@ var shortcut_input_actions: Array[StringName] = []
 var unhandled_key_input_actions: Array[StringName] = []
 var unhandled_input_actions: Array[StringName] = []
 
+
 # Determine if any action in a given list matches a given event.
 # 
 # @param event InputEvent: The event to check each action against.
@@ -210,7 +211,8 @@ func _handle_action_released(event: InputEvent, action: String) -> void:
 # 
 # NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
 func _input(event: InputEvent) -> void:
-	_process_input(event, find_action(event, ui_input_actions))
+	if ui_input_actions:
+		_process_input(event, find_action(event, ui_input_actions))
 
 
 # Process a given InputEvent action and, if self.set_input_as_handled property is true, call
@@ -258,7 +260,8 @@ func _ready() -> void:
 # 
 # NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
 func _unhandled_input(event: InputEvent) -> void:
-	_process_input(event, find_action(event, unhandled_input_actions))
+	if unhandled_input_actions:
+		_process_input(event, find_action(event, unhandled_input_actions))
 
 
 # Called when an InputEventKey hasn't been consumed by _input() or any GUI Control item. It is
@@ -277,7 +280,8 @@ func _unhandled_input(event: InputEvent) -> void:
 # 
 # NOTE: This method is only called if the node is present in the scene tree (i.e. not an orphan).
 func _unhandled_key_input(event: InputEvent) -> void:
-	_process_input(event, find_action(event, unhandled_key_input_actions))
+	if unhandled_key_input_actions:
+		_process_input(event, find_action(event, unhandled_key_input_actions))
 
 
 # Called when an InputEventKey or InputEventShortcut hasn't been consumed by _input() or any GUI
@@ -292,4 +296,5 @@ func _unhandled_key_input(event: InputEvent) -> void:
 # 
 # NOTE: This method is only called if the node is present in the scene tree (i.e. not orphan).
 func _unhandled_shortcuts(event: InputEvent) -> void:
-	_process_input(event, find_action(event, shortcut_input_actions))
+	if shortcut_input_actions:
+		_process_input(event, find_action(event, shortcut_input_actions))
