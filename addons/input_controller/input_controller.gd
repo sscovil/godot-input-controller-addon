@@ -230,6 +230,10 @@ func _determine_input_type(action_state: ActionState, delta: float) -> InputType
 	return InputType.HOLD
 
 
+func get_opposite_axis(axis: int) -> int:
+	return axis + 1 if axis % 2 == 0 else axis - 1
+
+
 ## Process a given InputEvent action and, if InputController.set_input_as_handled is true, call
 ## get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
 ## 
