@@ -2,6 +2,12 @@ extends Node2D
 
 const InputType = InputController.InputType
 
+@onready var input_controller = $InputController
+
+
+func _ready():
+	input_controller.connect("input_detected", _on_input_detected)
+
 
 func get_input_type_label(type: InputType) -> String:
 	match type:
@@ -29,7 +35,3 @@ func _on_input_detected(_event: InputEvent, action: String, input_type: InputTyp
 
 	if input_text:
 		prints(action, input_text)
-
-
-func _ready():
-	$InputController.connect("input_detected", _on_input_detected)

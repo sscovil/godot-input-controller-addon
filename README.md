@@ -59,9 +59,10 @@ the `input_detected` signal:
 
 ```gdscript
 const InputType = InputController.InputType
+@onready var input_controller = $InputController
 
 func _ready():
-	InputController.connect("input_detected", _on_input_detected)
+	input_controller.connect("input_detected", _on_input_detected)
 
 func _on_input_detected(event: InputEvent, action: String, input_type: InputType):
 	match type:
@@ -102,23 +103,23 @@ by directly accessing the properties of the node.
 Here is an example of how you can modify the settings in a script:
 
 ```gdscript
-@onready var InputController = $InputController
+@onready var input_controller = $InputController
 
 func _ready():
-    # Input Timing
-	InputController.max_button_tap = 0.18
-	InputController.max_double_tap_delay = 0.12
-	InputController.max_button_press = 0.45
-	InputController.max_long_press = 0.85
+	# Input Timing
+	input_controller.max_button_tap = 0.18
+	input_controller.max_double_tap_delay = 0.12
+	input_controller.max_button_press = 0.45
+	input_controller.max_long_press = 0.85
 	
 	# Input Handlers
-	InputController.ui_inputs = ["ui_*", "menu_*"]
-	InputController.shortcut_inputs = ["shortcut_*", "quit_game"]
-	InputController.unhandled_key_inputs = ["*_key"]
-	InputController.unhandled_inputs = ["player_*_action", "player_*_move"]
+	input_controller.ui_inputs = ["ui_*", "menu_*"]
+	input_controller.shortcut_inputs = ["shortcut_*", "quit_game"]
+	input_controller.unhandled_key_inputs = ["*_key"]
+	input_controller.unhandled_inputs = ["player_*_action", "player_*_move"]
 	
 	# Event Propagation
-	InputController.set_input_as_handled = true  # Default value
+	input_controller.set_input_as_handled = true  # Default value
 ```
 
 ### Input Timing Configuration
