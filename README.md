@@ -128,24 +128,24 @@ func _ready():
 Use these settings to fine tune the timing used to differentiate between a tap, double tap, press, long press, and
 hold. These are `float` values measured in seconds, so you can get very precise.
 
-| Setting Name         | Type    | Default |
-|----------------------|---------|---------|
-| Max Button Tap       | `float` | 0.2     |
-| Max Double Tap Delay | `float` | 0.1     |
-| Max Button Press     | `float` | 0.5     |
-| Max Long Tap         | `float` | 1       |
+| Inspector Label      | Property Name          | Type    | Default |
+|----------------------|------------------------|---------|---------|
+| Max Button Tap       | `max_button_tap`       | `float` | 0.2     |
+| Max Double Tap Delay | `max_double_tap_delay` | `float` | 0.1     |
+| Max Button Press     | `max_button_press`     | `float` | 0.5     |
+| Max Long Tap         | `max_long_press`       | `float` | 1       |
 
 ### Input Handlers Configuration
 
 Use these settings to customize which event handlers are used to detect different types of actions, and which input
 actions to listen for.
 
-| Setting Name         | Type            | Default  | Method                    |
-|----------------------|-----------------|----------|---------------------------|
-| UI Inputs            | `Array[String]` | ["ui_*"] | [_input()]                |
-| Shortcut Inputs      | `Array[String]` | []       | [_unhandled_shortcuts()]  |
-| Unhandled Key Inputs | `Array[String]` | []       | [_unhandled_key_inputs()] |
-| Unhandled Inputs     | `Array[String]` | ["*"]    | [_unhandled_input()]      |
+| Inspector Label      | Property Name          | Type            | Default  | Method                    |
+|----------------------|------------------------|-----------------|----------|---------------------------|
+| UI Inputs            | `ui_inputs`            | `Array[String]` | ["ui_*"] | [_input()]                |
+| Shortcut Inputs      | `shortcut_inputs`      | `Array[String]` | []       | [_unhandled_shortcuts()]  |
+| Unhandled Key Inputs | `unhandled_key_inputs` | `Array[String]` | []       | [_unhandled_key_inputs()] |
+| Unhandled Inputs     | `unhandled_inputs`     | `Array[String]` | ["*"]    | [_unhandled_input()]      |
 
 [_input()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
 [_unhandled_shortcuts()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-shortcuts
@@ -161,7 +161,6 @@ For example:
 - `["ui_*"]` will match any action that starts with `ui_`.
 - `["*_key"]` will match any action that ends with `_key`.
 - `["player_*_action"]` will match any action that starts with `player_` and ends with `_action`.
-- `["player_*_move"]` will match any action that starts with `player_` and ends with `_move`.
 - `["shortcut_*", "quit_game"]` will match any action that starts with `shortcut_` or is exactly `quit_game`.
 - `["*"]` will match any action.
 
@@ -180,9 +179,9 @@ other nodes by calling `get_viewport().set_input_as_handled()`.
 To allow the event to propagate after handling it, set this value to `false`. You might want to do this if you are
 only using the `InputController` for logging, analytics, or some other observational behavior.
  
-| Setting Name         | Type   | Default |
-|----------------------|--------|---------|
-| Set Input as Handled | `bool` | `true`  |
+| Inspector Label      | Property Name           | Type    | Default |
+|----------------------|-------------------------|---------|---------|
+| Set Input as Handled | `set_input_as_handled`  |  `bool` | `true`  |
 
 ## Troubleshooting
 
