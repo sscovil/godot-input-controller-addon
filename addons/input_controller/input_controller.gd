@@ -82,22 +82,22 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if _handlers.has_actions("_input"):
-		_process_input(event, find_action(event, _handlers.get_actions("_input")))
+		process_input(event, find_actions(event, _handlers.get_actions("_input")))
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _handlers.has_actions("_unhandled_input"):
-		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_input")))
+		process_input(event, find_actions(event, _handlers.get_actions("_unhandled_input")))
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if _handlers.has_actions("_unhandled_key_input"):
-		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_key_input")))
+		process_input(event, find_actions(event, _handlers.get_actions("_unhandled_key_input")))
 
 
 func _unhandled_shortcuts(event: InputEvent) -> void:
 	if _handlers.has_actions("_unhandled_shortcuts"):
-		_process_input(event, find_action(event, _handlers.get_actions("_unhandled_shortcuts")))
+		process_input(event, find_actions(event, _handlers.get_actions("_unhandled_shortcuts")))
 
 
 ## Wrapper function for Time.get_ticks_msec() that returns the value in seconds, as a float.
@@ -110,12 +110,14 @@ func get_ticks() -> float:
 ## @param event InputEvent: The event to check each action against.
 ## @param actions Array[StringName]: A list of actions to check.
 ## @return InputControllerAction: The first action that matches the event, or "" if no match found.
-func find_action(event: InputEvent, actions: Array[StringName]) -> StringName:
+func find_actions(event: InputEvent, actions: Array[StringName]) -> Array[StringName]:
+	var result: Array[StringName] = []
+	
 	for action in actions:
 		if event.is_action(action):
-			return action
+			result.push_back(action)
 	
-	return ""  # No match found.
+	return result
 
 
 ## Add each input action in a given list (or all actions from InputMap by default) to one of the
@@ -186,6 +188,26 @@ func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get
 				available_actions.pop_at(available_actions.find(setting))
 
 
+## Process InputEvent actions and, if InputController.set_input_as_handled is true, call
+## get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
+## 
+## @param event InputEvent: The event that triggered the action.
+## @param actions Array[StringName: The actions to process.
+## @return bool: True if the event was processed; otherwise, false.
+func process_input(event: InputEvent, actions: Array[StringName]) -> bool:
+	if !actions:
+		return false  # No action to process.
+	
+	for action: StringName in actions:
+		_process_action(event, action)
+	
+	# If configured to do so, prevent the InputEvent from propagating to other nodes.
+	if set_input_as_handled:
+		get_viewport().set_input_as_handled()
+	
+	return true  # Action was processed.
+
+
 ## Determine the InputType of a given InputEvent. This method is private because it updates the
 ## internal state of the InputController. It should only be called when certain conditions are met.
 ## 
@@ -230,20 +252,7 @@ func _determine_input_type(action_state: ActionState, delta: float) -> InputType
 	return InputType.HOLD
 
 
-func get_opposite_axis(axis: int) -> int:
-	return axis + 1 if axis % 2 == 0 else axis - 1
-
-
-## Process a given InputEvent action and, if InputController.set_input_as_handled is true, call
-## get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
-## 
-## @param event InputEvent: The event that triggered the action.
-## @param action StringName: The action to process.
-## @return bool: True if the event was processed; otherwise, false.
-func _process_input(event: InputEvent, action: StringName) -> bool:
-	if !action or !_actions.has(action):
-		return false  # No action to process.
-	
+func _process_action(event: InputEvent, action: StringName) -> void:
 	var action_state: ActionState = _actions[action]
 	
 	# If the action just started, set last_activated_at and notify event listeners.
@@ -258,9 +267,3 @@ func _process_input(event: InputEvent, action: StringName) -> bool:
 		action_state.last_activated_at = 0  # Reset this before calling _determine_input_type().
 		input_type = await _determine_input_type(action_state, delta)
 		input_detected.emit(event, action, input_type)
-	
-	# If configured to do so, prevent the InputEvent from propagating to other nodes.
-	if set_input_as_handled:
-		get_viewport().set_input_as_handled()
-	
-	return true  # Action was processed.
