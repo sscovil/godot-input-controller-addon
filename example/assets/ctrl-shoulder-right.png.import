@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://n6kfossq1mag"
-path="res://.godot/imported/icon.png-e493b81bb0ba181dbfc40e5a9318df18.ctex"
+uid="uid://du3ctx5w7t0yn"
+path="res://.godot/imported/ctrl-shoulder-right.png-b1bb51bbe66522a0a758fbb6261b4d82.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/input_controller/icon.png"
-dest_files=["res://.godot/imported/icon.png-e493b81bb0ba181dbfc40e5a9318df18.ctex"]
+source_file="res://example/assets/ctrl-shoulder-right.png"
+dest_files=["res://.godot/imported/ctrl-shoulder-right.png-b1bb51bbe66522a0a758fbb6261b4d82.ctex"]
 
 [params]
 

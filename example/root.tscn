@@ -60,15 +60,15 @@ position = Vector2(293, -83)
 texture = ExtResource("10_q7lya")
 
 [node name="RedButton" type="Sprite2D" parent="Controller"]
-position = Vector2(354, -155)
+position = Vector2(356, -150)
 texture = ExtResource("11_37kua")
 
 [node name="BlueButton" type="Sprite2D" parent="Controller"]
-position = Vector2(227, -151)
+position = Vector2(230, -150.5)
 texture = ExtResource("12_dhycm")
 
 [node name="YellowButton" type="Sprite2D" parent="Controller"]
-position = Vector2(291, -217)
+position = Vector2(293, -217.5)
 texture = ExtResource("13_tpwi1")
 
 [node name="LeftBumper" type="Sprite2D" parent="Controller"]
@@ -76,15 +76,15 @@ position = Vector2(-310, -302)
 texture = ExtResource("14_erukp")
 
 [node name="RightBumper" type="Sprite2D" parent="Controller"]
-position = Vector2(312, -302)
+position = Vector2(310, -302)
 texture = ExtResource("15_nqech")
 
 [node name="StartButton" type="Sprite2D" parent="Controller"]
-position = Vector2(144, -245)
+position = Vector2(142, -239)
 texture = ExtResource("16_71xre")
 
 [node name="SelectButton" type="Sprite2D" parent="Controller"]
-position = Vector2(-148, -245)
+position = Vector2(-150, -239)
 texture = ExtResource("17_es8ll")
 
 [node name="PowerButton" type="Sprite2D" parent="Controller"]
@@ -92,5 +92,5 @@ position = Vector2(-3, -16)
 texture = ExtResource("18_yk64a")
 
 [node name="TouchPad" type="Sprite2D" parent="Controller"]
-position = Vector2(-1, -230)
+position = Vector2(-6, -234)
 texture = ExtResource("19_wrjxu")
