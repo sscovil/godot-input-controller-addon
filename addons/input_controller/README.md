@@ -1,5 +1,5 @@
 <h1 align="center">
-    InputController
+	InputController
 </h1>
 
 <p align="center">
