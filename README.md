@@ -66,7 +66,7 @@ func _ready():
 	input_controller.connect("input_detected", _on_input_detected)
 
 func _on_input_detected(event: InputEvent, action: String, input_type: InputType):
-	match type:
+	match input_type:
 		InputType.TAP:
 			prints(action, "tapped")
 		InputType.DOUBLE_TAP:
