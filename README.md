@@ -11,9 +11,11 @@
   <a href="https://github.com/sscovil/godot-input-controller-addon/releases"  target="_blank" style="text-decoration:none"><img alt="Latest InputController Release" src="https://img.shields.io/github/v/release/sscovil/godot-input-controller-addon?include_prereleases&labelColor=CFC9C8&color=CBA18C"></a>
 </p>
 
-## Table of Contents
+<p align="center">
+  <img src="addons/input_controller/icon.svg" alt="InputController Icon" width="128" height="128">
+</p>
 
-<img src="addons/input_controller/icon.svg" alt="InputController Icon" width="128" height="128" style="float:right;margin-right:10%">
+## Table of Contents
 
 - [Pre-Release Notice](#pre-release-notice)
 - [Version](#version)
