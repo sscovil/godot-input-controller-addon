@@ -130,22 +130,22 @@ hold. These are `float` values measured in seconds, so you can get very precise.
 
 | Inspector Label      | Property Name          | Type    | Default |
 |----------------------|------------------------|---------|---------|
-| Max Button Tap       | `max_button_tap`       | `float` | 0.2     |
-| Max Double Tap Delay | `max_double_tap_delay` | `float` | 0.1     |
-| Max Button Press     | `max_button_press`     | `float` | 0.5     |
-| Max Long Tap         | `max_long_press`       | `float` | 1       |
+| Max Button Tap       | `max_button_tap`       | `float` | `0.2`   |
+| Max Double Tap Delay | `max_double_tap_delay` | `float` | `0.1`   |
+| Max Button Press     | `max_button_press`     | `float` | `0.5`   |
+| Max Long Tap         | `max_long_press`       | `float` | `1`     |
 
 ### Input Handlers Configuration
 
 Use these settings to customize which event handlers are used to detect different types of actions, and which input
 actions to listen for.
 
-| Inspector Label      | Property Name          | Type            | Default  | Method                    |
-|----------------------|------------------------|-----------------|----------|---------------------------|
-| UI Inputs            | `ui_inputs`            | `Array[String]` | ["ui_*"] | [_input()]                |
-| Shortcut Inputs      | `shortcut_inputs`      | `Array[String]` | []       | [_unhandled_shortcuts()]  |
-| Unhandled Key Inputs | `unhandled_key_inputs` | `Array[String]` | []       | [_unhandled_key_inputs()] |
-| Unhandled Inputs     | `unhandled_inputs`     | `Array[String]` | ["*"]    | [_unhandled_input()]      |
+| Inspector Label      | Property Name          | Type            | Default    | Method                    |
+|----------------------|------------------------|-----------------|------------|---------------------------|
+| UI Inputs            | `ui_inputs`            | `Array[String]` | `["ui_*"]` | [_input()]                |
+| Shortcut Inputs      | `shortcut_inputs`      | `Array[String]` | `[]`       | [_unhandled_shortcuts()]  |
+| Unhandled Key Inputs | `unhandled_key_inputs` | `Array[String]` | `[]`       | [_unhandled_key_inputs()] |
+| Unhandled Inputs     | `unhandled_inputs`     | `Array[String]` | `["*"]`    | [_unhandled_input()]      |
 
 [_input()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
 [_unhandled_shortcuts()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-shortcuts
