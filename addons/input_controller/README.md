@@ -202,14 +202,14 @@ action will be the one that ends up handling it.
 
 For example, let's say you have the following configuration:
 
-- UI Inputs: `["ui_*", "*_menu"]`
-- Shortcut Inputs: `["shortcut_*"]`
-- Unhandled Key Inputs: `["*"]`
-- Unhandled Inputs: `["player_*"]`
+1. **UI Inputs**: `["ui_*", "*_menu"]`
+2. **Shortcut Inputs**: `["shortcut_*"]`
+3. **Unhandled Key Inputs**: `["*"]`
+4. **Unhandled Inputs**: `["player_*"]`
 
-In this case, an action named `shortcut_menu` would be handled by the `UI Inputs` handler, because it matches `*_menu`
-and that handler gets first pick of the actions. Likewise, no actions would make it to the `Unhandled Inputs` handler,
-because the `*` wildcard was used in the `Unhandled Key Inputs` handler.
+In this case, an action named `shortcut_menu` would be handled by the **UI Inputs** handler, because it matches `*_menu`
+and that handler gets first pick of the actions. Likewise, no actions would make it to the **Unhandled Inputs** handler,
+because the `*` wildcard was used in the **Unhandled Key Inputs** handler.
 
 ## License
 
