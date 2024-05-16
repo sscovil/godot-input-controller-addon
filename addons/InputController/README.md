@@ -80,18 +80,18 @@ func _on_input_detected(event: InputEvent, action: String, input_type: InputType
 ```
 
 ```C#
-	[Export]
-    private InputController _controller;
+[Export]
+private InputController _controller;
 
-    public override void _Ready()
-    {
-        _controller.InputDetected += OnInputDetected;
-    }
+public override void _Ready()
+{
+	_controller.InputDetected += OnInputDetected;
+}
 
-    private void OnInputDetected(InputEvent inputEvent, string action, InputType inputType)
-    {
-        GD.Print($"{action} {inputType}");
-    }
+private void OnInputDetected(InputEvent inputEvent, string action, InputType inputType)
+{
+	GD.Print($"{action} {inputType}");
+}
 ```
 
 The signal will send the `InputEvent` that triggered the action, the name of the action that was triggered, and the type
@@ -119,26 +119,26 @@ by directly accessing the properties of the node.
 Here is an example of how you can modify the settings in a script:
 
 ```C#
-	[Export]
-    private InputController _controller;
+[Export]
+private InputController _controller;
 
-    public override void _Ready()
-    {
-        // Input Timing
-        _controller.MaxButtonTap = 0.18
-        _controller.MaxDoubleTapDelay = 0.12
-        _controller.MaxButtonPress = 0.45
-        _controller.MaxLongPress = 0.85
-        
-        // Input Handlers
-        _controller.UiInputs = ["ui_*", "menu_*"]
-        _controller.ShortcutInputs = ["shortcut_*", "quit_game"]
-        _controller.UnhandledKeyInputs = ["*_key"]
-        _controller.UnhandledInputs = ["player_*_action", "player_*_move"]
-        
-        // Event Propagation
-        _controller.SetInputAsHandled = true  // Default value
-    }
+public override void _Ready()
+{
+	// Input Timing
+	_controller.MaxButtonTap = 0.18;
+	_controller.MaxDoubleTapDelay = 0.12;
+	_controller.MaxButtonPress = 0.45;
+	_controller.MaxLongPress = 0.85;
+	
+	// Input Handlers
+	_controller.UiInputs = ["ui_*", "menu_*"];
+	_controller.ShortcutInputs = ["shortcut_*", "quit_game"];
+	_controller.UnhandledKeyInputs = ["*_key"];
+	_controller.UnhandledInputs = ["player_*_action", "player_*_move"];
+	
+	// Event Propagation
+	_controller.SetInputAsHandled = true;  // Default value
+}
 ```
 
 ### Input Timing Configuration
