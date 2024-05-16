@@ -65,7 +65,7 @@ public partial class InputController : Node
     /// NOTE: The InputController will only receive the input event if it has not already been handled by
     /// a child node, or a sibling node that appears below it in the scene tree.
     /// </summary>
-    [Export] private bool SetInputAsHandled { get; set; } = true;
+    [Export] public bool SetInputAsHandled { get; set; } = true;
 
     /// <summary>
     /// Map of input handler method names to their respective settings (defined above).

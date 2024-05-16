@@ -44,7 +44,7 @@ Let's install InputController into your Godot project:
 
 Now, let's verify you have correctly installed InputController:
 
-- You have this folder path `res://addons/input_controller`.
+- You have this folder path `res://addons/InputController`.
 - Head to `Project > Project Settings`.
 - Click the `Plugins` tab.
 - Tick the `enabled` button next to InputController.
@@ -79,6 +79,21 @@ func _on_input_detected(event: InputEvent, action: String, input_type: InputType
 			prints(action, "held")
 ```
 
+```C#
+	[Export]
+    private InputController _controller;
+
+    public override void _Ready()
+    {
+        _controller.InputDetected += OnInputDetected;
+    }
+
+    private void OnInputDetected(InputEvent inputEvent, string action, InputType inputType)
+    {
+        GD.Print($"{action} {inputType}");
+    }
+```
+
 The signal will send the `InputEvent` that triggered the action, the name of the action that was triggered, and the type
 of input that was detected. The `InputType` enum has the following values:
 
@@ -103,24 +118,27 @@ by directly accessing the properties of the node.
 
 Here is an example of how you can modify the settings in a script:
 
-```gdscript
-@onready var input_controller = $InputController
+```C#
+	[Export]
+    private InputController _controller;
 
-func _ready():
-	# Input Timing
-	input_controller.max_button_tap = 0.18
-	input_controller.max_double_tap_delay = 0.12
-	input_controller.max_button_press = 0.45
-	input_controller.max_long_press = 0.85
-	
-	# Input Handlers
-	input_controller.ui_inputs = ["ui_*", "menu_*"]
-	input_controller.shortcut_inputs = ["shortcut_*", "quit_game"]
-	input_controller.unhandled_key_inputs = ["*_key"]
-	input_controller.unhandled_inputs = ["player_*_action", "player_*_move"]
-	
-	# Event Propagation
-	input_controller.set_input_as_handled = true  # Default value
+    public override void _Ready()
+    {
+        // Input Timing
+        _controller.MaxButtonTap = 0.18
+        _controller.MaxDoubleTapDelay = 0.12
+        _controller.MaxButtonPress = 0.45
+        _controller.MaxLongPress = 0.85
+        
+        // Input Handlers
+        _controller.UiInputs = ["ui_*", "menu_*"]
+        _controller.ShortcutInputs = ["shortcut_*", "quit_game"]
+        _controller.UnhandledKeyInputs = ["*_key"]
+        _controller.UnhandledInputs = ["player_*_action", "player_*_move"]
+        
+        // Event Propagation
+        _controller.SetInputAsHandled = true  // Default value
+    }
 ```
 
 ### Input Timing Configuration
@@ -130,10 +148,10 @@ hold. These are `float` values measured in seconds, so you can get very precise.
 
 | Inspector Label      | Property Name          | Type    | Default |
 |----------------------|------------------------|---------|---------|
-| Max Button Tap       | `max_button_tap`       | `float` | `0.2`   |
-| Max Double Tap Delay | `max_double_tap_delay` | `float` | `0.1`   |
-| Max Button Press     | `max_button_press`     | `float` | `0.5`   |
-| Max Long Tap         | `max_long_press`       | `float` | `1`     |
+| Max Button Tap       | `MaxButtonTap`       | `float` | `0.2`   |
+| Max Double Tap Delay | `MaxDoubleTapDelay` | `float` | `0.1`   |
+| Max Button Press     | `MaxButtonPress`     | `float` | `0.5`   |
+| Max Long Tap         | `MaxLongPress`       | `float` | `1`     |
 
 ### Input Handlers Configuration
 
@@ -142,15 +160,15 @@ actions to listen for.
 
 | Inspector Label      | Property Name          | Type            | Default    | Method                    |
 |----------------------|------------------------|-----------------|------------|---------------------------|
-| UI Inputs            | `ui_inputs`            | `Array[String]` | `["ui_*"]` | [_input()]                |
-| Shortcut Inputs      | `shortcut_inputs`      | `Array[String]` | `[]`       | [_unhandled_shortcuts()]  |
-| Unhandled Key Inputs | `unhandled_key_inputs` | `Array[String]` | `[]`       | [_unhandled_key_inputs()] |
-| Unhandled Inputs     | `unhandled_inputs`     | `Array[String]` | `["*"]`    | [_unhandled_input()]      |
+| UI Inputs            | `UiInputs`            | `string[]` | `["ui_*"]` | [_Input(InputEvent @event)]                |
+| Shortcut Inputs      | `ShortcutInputs`      | `string[]` | `[]`       | [_ShortcutInput(InputEvent @event)]  |
+| Unhandled Key Inputs | `UnhandledKeyInputs` | `string[]` | `[]`       | [_UnhandledKeyInput(InputEvent @event)] |
+| Unhandled Inputs     | `UnhandledInputs`     | `string[]` | `["*"]`    | [_UnhandledInput(InputEvent @event)]      |
 
-[_input()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
-[_unhandled_shortcuts()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-shortcuts
-[_unhandled_key_inputs()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-key-inputs
-[_unhandled_input()]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-input
+[_Input(InputEvent @event)]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-input
+[_ShortcutInput(InputEvent @event)]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-shortcuts
+[_UnhandledKeyInput(InputEvent @event)]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-key-inputs
+[_UnhandledInput(InputEvent @event)]: https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-input
 
 Each array can have zero or more strings that represent the names of the actions you want to listen for. The `*`
 character is a wildcard that will match any string if used alone, or any part of a string if used in combination with
@@ -164,7 +182,7 @@ For example:
 - `["shortcut_*", "quit_game"]` will match any action that starts with `shortcut_` or is exactly `quit_game`.
 - `["*"]` will match any action.
 
-By default, the [_input()] method will be used to handle all actions that start with `ui_`; and [_unhandled_input()]
+By default, the [_Input(InputEvent @event)] method will be used to handle all actions that start with `ui_`; and [_UnhandledInput(InputEvent @event)]
 will be used to handle all other actions. This may or may not have a material impact on your game, but it's good to
 know if things aren't behaving as expected.
 
@@ -174,14 +192,14 @@ More information about how input events are processed in Godot can be found
 ### Event Propagation Configuration
 
 If set to `true` (default value), the `InputController` will consume an `InputEvent` and stop it from propagating to
-other nodes by calling `get_viewport().set_input_as_handled()`.
+other nodes by calling `GetViewport().SetInputAsHandled()`.
 
 To allow the event to propagate after handling it, set this value to `false`. You might want to do this if you are
 only using the `InputController` for logging, analytics, or some other observational behavior.
 
 | Inspector Label      | Property Name           | Type    | Default |
 |----------------------|-------------------------|---------|---------|
-| Set Input as Handled | `set_input_as_handled`  |  `bool` | `true`  |
+| Set Input as Handled | `SetInputAsHandled`  |  `bool` | `true`  |
 
 ## Troubleshooting
 
