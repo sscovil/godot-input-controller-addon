@@ -1,5 +1,5 @@
 <h1 align="center">
-    InputController
+	InputController
 </h1>
 
 <p align="center">
@@ -13,22 +13,17 @@
 </p>
 
 <p align="center">
-  <img src="addons/input_controller/icon.svg" alt="InputController Icon" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/sscovil/godot-input-controller-addon/main/addons/input_controller/icon.svg" alt="InputController Icon" width="128" height="128">
 </p>
 
 ## Table of Contents
 
-- [Pre-Release Notice](#pre-release-notice)
 - [Version](#version)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
 - [License](#license)
-
-## Pre-Release Notice
-
-This add-on is currently in a pre-release state. It has been tested and is working as expected, but it has not yet been
-used in a production environment. Please report any issues you encounter.
 
 ## Version
 
@@ -185,7 +180,7 @@ only using the `InputController` for logging, analytics, or some other observati
 
 ## Troubleshooting
 
-### Input Actions Not Being Detected
+### Input actions are not being detected
 
 The `InputController` will only receive an input event if it has not already been handled by a child node, or a sibling
 node that appears below it in the scene tree.
@@ -193,7 +188,7 @@ node that appears below it in the scene tree.
 Try creating a new scene with only the `InputController` node and see if the input actions are detected. If they are,
 then you know the actions are being handled elsewhere in your code before they reach the `InputController`.
 
-### Input Actions Being Handled by the Wrong Handler
+### Input actions are being handled by the wrong handler method
 
 This is likely an issue with your [Input Handlers Configuration](#input-handlers-configuration).
 

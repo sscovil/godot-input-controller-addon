@@ -14,41 +14,37 @@ const INACTIVE: Color = Color(1, 1, 1, 255)
 @onready var BlueButton: Sprite2D = $BlueButton
 @onready var YellowButton: Sprite2D = $YellowButton
 @onready var LeftBumper: Sprite2D = $LeftBumper
-#@onready var LeftTrigger: Sprite2D = $LeftTrigger
 @onready var RightBumper: Sprite2D = $RightBumper
-#@onready var RightTrigger: Sprite2D = $RightTrigger
 @onready var StartButton: Sprite2D = $StartButton
 @onready var SelectButton: Sprite2D = $SelectButton
 @onready var PowerButton: Sprite2D = $PowerButton
 @onready var TouchPad: Sprite2D = $TouchPad
 
 @onready var action_map: Dictionary = {
-	"dpad_up": Up,
-	"dpad_down": Down,
-	"dpad_left": Left,
-	"dpad_right": Right,
-	"left_stick_up": LeftStick,
-	"left_stick_down": LeftStick,
-	"left_stick_left": LeftStick,
-	"left_stick_right": LeftStick,
-	"left_stick_button": LeftStick,
-	"right_stick_up": RightStick,
-	"right_stick_down": RightStick,
-	"right_stick_left": RightStick,
-	"right_stick_right": RightStick,
-	"right_stick_button": RightStick,
-	"green_button": GreenButton,
-	"red_button": RedButton,
-	"blue_button": BlueButton,
-	"yellow_button": YellowButton,
-	"left_bumper": LeftBumper,
-	#"left_trigger": LeftTrigger,
-	"right_bumper": RightBumper,
-	#"right_trigger": RightTrigger,
-	"start": StartButton,
-	"select": SelectButton,
-	"power_button": PowerButton,
-	"touchpad": TouchPad,
+	"joy_dpad_up": Up,
+	"joy_dpad_down": Down,
+	"joy_dpad_left": Left,
+	"joy_dpad_right": Right,
+	"joy_left_stick_up": LeftStick,
+	"joy_left_stick_down": LeftStick,
+	"joy_left_stick_left": LeftStick,
+	"joy_left_stick_right": LeftStick,
+	"joy_left_stick_button": LeftStick,
+	"joy_right_stick_up": RightStick,
+	"joy_right_stick_down": RightStick,
+	"joy_right_stick_left": RightStick,
+	"joy_right_stick_right": RightStick,
+	"joy_right_stick_button": RightStick,
+	"joy_green_button": GreenButton,
+	"joy_red_button": RedButton,
+	"joy_blue_button": BlueButton,
+	"joy_yellow_button": YellowButton,
+	"joy_left_bumper": LeftBumper,
+	"joy_right_bumper": RightBumper,
+	"joy_start": StartButton,
+	"joy_select": SelectButton,
+	"joy_power_button": PowerButton,
+	"joy_touchpad": TouchPad,
 }
 
 var activator: Callable = func(action): action_map[action].set_modulate(ACTIVE)

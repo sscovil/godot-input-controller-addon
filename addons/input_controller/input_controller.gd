@@ -17,14 +17,14 @@ enum InputType {
 const ActionHandlerMap = preload("res://addons/input_controller/action_handler_map.gd")
 const ActionState = preload("res://addons/input_controller/action_state.gd")
 
-@export_group("Input Timing")
 ## These values are used to determine the InputType of an InputEvent; all values are in seconds.
+@export_group("Input Timing")
+
 @export var max_button_tap: float = 0.2  # Max time for InputType.TAP.
 @export var max_double_tap_delay: float = 0.1  # Max time between taps for InputType.DOUBLE_TAP.
 @export var max_button_press: float = 0.5  # Max time for InputType.PRESS.
 @export var max_long_press: float = 1.0  # Max time for InputType.LONG_PRESS.
 
-@export_group("Input Handlers")
 ## These values are used to identify which actions will be handled by which InputController
 ## methods, based on the input event propagation lifecycle explained here:
 ## https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work
@@ -43,12 +43,13 @@ const ActionState = preload("res://addons/input_controller/action_state.gd")
 ## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-shortcut-input
 ## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-key-input
 ## https://docs.godotengine.org/en/stable/classes/class_node.html#class-node-private-method-unhandled-input
+@export_group("Input Handlers")
+
 @export var ui_inputs: Array[String] = ["ui_*"]
 @export var shortcut_inputs: Array[String] = []
 @export var unhandled_key_inputs: Array[String] = []
 @export var unhandled_inputs: Array[String] = ["*"]
 
-@export_group("Event Propagation")
 ## If set to true (default), the InputController will consume InputEvents and stop them from
 ## propagating to other nodes by calling get_viewport().set_input_as_handled(). To allow the event
 ## to propagate after handling it, set this value to false. You might want to do this if you are only
@@ -56,14 +57,16 @@ const ActionState = preload("res://addons/input_controller/action_state.gd")
 ## 
 ## NOTE: The InputController will only receive the input event if it has not already been handled by
 ## a child node, or a sibling node that appears below it in the scene tree.
+@export_group("Event Propagation")
+
 @export var set_input_as_handled: bool = true
 
 ## Map of input handler method names to their respective settings (defined above).
 var settings: Dictionary = {
-	"_input": ui_inputs,
-	"_unhandled_shortcuts": shortcut_inputs,
-	"_unhandled_key_input": unhandled_key_inputs,
-	"_unhandled_input": unhandled_inputs,
+	"_input": &"ui_inputs",
+	"_unhandled_shortcuts": &"shortcut_inputs",
+	"_unhandled_key_input": &"unhandled_key_inputs",
+	"_unhandled_input": &"unhandled_inputs",
 }
 
 ## RegEx pattern to find a "*" character in a string and, if present, capture the text around it.
@@ -136,7 +139,7 @@ func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get
 				break
 		
 		# Loop through each of the settings for the current method.
-		for setting in settings[method]:
+		for setting in get(settings[method]):
 			# End the loop early if no actions are available.
 			if !available_actions:
 				break

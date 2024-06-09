@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://example/root.gd" id="1_y0l6f"]
 [ext_resource type="Script" path="res://addons/input_controller/input_controller.gd" id="2_goqi5"]
 [ext_resource type="Texture2D" uid="uid://br1ssf1m72ivy" path="res://example/assets/ctrl-body.png" id="3_14exq"]
-[ext_resource type="Script" path="res://example/controller.gd" id="4_k406c"]
+[ext_resource type="Script" path="res://example/joy_pad.gd" id="4_k406c"]
 [ext_resource type="Texture2D" uid="uid://brv5eaewsfap0" path="res://example/assets/ctrl-dpad-up.png" id="5_55237"]
 [ext_resource type="Texture2D" uid="uid://634p56yrv2hk" path="res://example/assets/ctrl-dpad-down.png" id="6_48h2c"]
 [ext_resource type="Texture2D" uid="uid://j3k2pn66whsa" path="res://example/assets/ctrl-dpad-left.png" id="7_aou2e"]
@@ -25,72 +25,74 @@ script = ExtResource("1_y0l6f")
 
 [node name="InputController" type="Node" parent="."]
 script = ExtResource("2_goqi5")
+ui_inputs = Array[String]([])
+unhandled_inputs = Array[String](["joy_*", "kb_*", "wasd_*"])
 
-[node name="Controller" type="Sprite2D" parent="."]
+[node name="JoyPad" type="Sprite2D" parent="."]
 position = Vector2(512, 350)
 texture = ExtResource("3_14exq")
 script = ExtResource("4_k406c")
 
-[node name="Up" type="Sprite2D" parent="Controller"]
+[node name="Up" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-298, -200)
 texture = ExtResource("5_55237")
 
-[node name="Down" type="Sprite2D" parent="Controller"]
+[node name="Down" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-300, -96)
 texture = ExtResource("6_48h2c")
 
-[node name="Left" type="Sprite2D" parent="Controller"]
+[node name="Left" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-351, -147)
 texture = ExtResource("7_aou2e")
 
-[node name="Right" type="Sprite2D" parent="Controller"]
+[node name="Right" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-248, -145)
 texture = ExtResource("8_k36kg")
 
-[node name="LeftStick" type="Sprite2D" parent="Controller"]
+[node name="LeftStick" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-173, 60)
 texture = ExtResource("9_bw7cr")
 
-[node name="RightStick" type="Sprite2D" parent="Controller"]
+[node name="RightStick" type="Sprite2D" parent="JoyPad"]
 position = Vector2(164, 60)
 texture = ExtResource("9_bw7cr")
 
-[node name="GreenButton" type="Sprite2D" parent="Controller"]
+[node name="GreenButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(293, -83)
 texture = ExtResource("10_q7lya")
 
-[node name="RedButton" type="Sprite2D" parent="Controller"]
+[node name="RedButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(356, -150)
 texture = ExtResource("11_37kua")
 
-[node name="BlueButton" type="Sprite2D" parent="Controller"]
+[node name="BlueButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(230, -150.5)
 texture = ExtResource("12_dhycm")
 
-[node name="YellowButton" type="Sprite2D" parent="Controller"]
+[node name="YellowButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(293, -217.5)
 texture = ExtResource("13_tpwi1")
 
-[node name="LeftBumper" type="Sprite2D" parent="Controller"]
+[node name="LeftBumper" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-310, -302)
 texture = ExtResource("14_erukp")
 
-[node name="RightBumper" type="Sprite2D" parent="Controller"]
+[node name="RightBumper" type="Sprite2D" parent="JoyPad"]
 position = Vector2(310, -302)
 texture = ExtResource("15_nqech")
 
-[node name="StartButton" type="Sprite2D" parent="Controller"]
+[node name="StartButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(142, -239)
 texture = ExtResource("16_71xre")
 
-[node name="SelectButton" type="Sprite2D" parent="Controller"]
+[node name="SelectButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-150, -239)
 texture = ExtResource("17_es8ll")
 
-[node name="PowerButton" type="Sprite2D" parent="Controller"]
+[node name="PowerButton" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-3, -16)
 texture = ExtResource("18_yk64a")
 
-[node name="TouchPad" type="Sprite2D" parent="Controller"]
+[node name="TouchPad" type="Sprite2D" parent="JoyPad"]
 position = Vector2(-6, -234)
 texture = ExtResource("19_wrjxu")
