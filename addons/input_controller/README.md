@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="https://godotengine.org/download/" target="_blank" style="text-decoration:none"><img alt="Godot v4.2+" src="https://img.shields.io/badge/Godot-v4.2+-%23478cbf?logo=godot-engine&logoColor=cyian&labelColor=CFC9C8" /></a>
-  <a href="https://github.com/sscovil/godot-input-controller-addon/releases"  target="_blank" style="text-decoration:none"><img alt="Latest InputController Release" src="https://img.shields.io/github/v/release/sscovil/godot-input-controller-addon?include_prereleases&labelColor=CFC9C8"></a>
+  <a href="https://godotengine.org/download/" target="_blank" style="text-decoration:none"><img alt="Godot v4.2+" src="https://img.shields.io/badge/Godot-v4.2+-%23478cbf?logo=godot-engine&labelColor=silver" /></a>
+  <a href="https://github.com/sscovil/godot-input-controller-addon/releases"  target="_blank" style="text-decoration:none"><img alt="Latest InputController Release" src="https://img.shields.io/github/v/release/sscovil/godot-input-controller-addon?include_prereleases&labelColor=silver&color=orange"></a>
   <a href="https://github.com/sscovil/godot-input-controller-addon/" target="_blank" style="text-decoration:none"><img alt="GitHub Repo Stars" src="https://img.shields.io/github/stars/sscovil/godot-input-controller-addon"></a>
 </p>
 
