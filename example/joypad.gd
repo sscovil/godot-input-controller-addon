@@ -47,18 +47,16 @@ const INACTIVE: Color = Color(1, 1, 1, 255)
 	"joy_touchpad": TouchPad,
 }
 
-var activator: Callable = func(action): action_map[action].set_modulate(ACTIVE)
-var deactivator: Callable = func(action): action_map[action].set_modulate(INACTIVE)
 
 func activate(action: String) -> void:
 	if !action_map.has(action):
 		return  # Nothing to activate.
 	
-	activator.call_deferred(action)
+	action_map[action].set_modulate(ACTIVE)
 
 
 func deactivate(action: String) -> void:
 	if !action_map.has(action):
 		return  # Nothing to deactivate.
 	
-	deactivator.call_deferred(action)
+	action_map[action].set_modulate(INACTIVE)

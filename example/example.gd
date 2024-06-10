@@ -3,11 +3,15 @@ extends Node2D
 const InputType = InputController.InputType
 
 @onready var input_controller = $InputController
-@onready var joy_pad: Sprite2D = $JoyPad
+@onready var joypad: Sprite2D = $JoyPad
 
 
 func _ready():
 	input_controller.connect("input_detected", _on_input_detected)
+
+
+func _get_device_name(event: InputEvent) -> String:
+	return "keyboard" if is_instance_of(event, InputEventKey) else "device %d" % event.device
 
 
 func get_input_type_label(type: InputType) -> String:
@@ -26,15 +30,9 @@ func get_input_type_label(type: InputType) -> String:
 	return ""
 
 
-func _get_device_name(event: InputEvent) -> String:
-	return "keyboard" if is_instance_of(event, InputEventKey) else "device %d" % event.device
-
-
 func _on_input_detected(event: InputEvent, action: String, input_type: InputType):
-	if action in joy_pad.action_map.keys():
-		match input_type:
-			InputType.ACTIVE: joy_pad.call("activate", action)
-			InputType.CANCEL: joy_pad.call("deactivate", action)
+	if action in joypad.action_map.keys():
+		joypad.call("activate" if InputType.ACTIVE == input_type else "deactivate", action)
 	
 	var input_text: String = get_input_type_label(input_type)
 	

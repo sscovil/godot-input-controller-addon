@@ -1,9 +1,9 @@
-[gd_scene load_steps=20 format=3 uid="uid://cc6yv17d7gs5h"]
+[gd_scene load_steps=20 format=3 uid="uid://bm5fouwp4xs1y"]
 
-[ext_resource type="Script" path="res://example/root.gd" id="1_y0l6f"]
+[ext_resource type="Script" path="res://example/example.gd" id="1_y0l6f"]
 [ext_resource type="Script" path="res://addons/input_controller/input_controller.gd" id="2_goqi5"]
 [ext_resource type="Texture2D" uid="uid://br1ssf1m72ivy" path="res://example/assets/ctrl-body.png" id="3_14exq"]
-[ext_resource type="Script" path="res://example/joy_pad.gd" id="4_k406c"]
+[ext_resource type="Script" path="res://example/joypad.gd" id="4_k406c"]
 [ext_resource type="Texture2D" uid="uid://brv5eaewsfap0" path="res://example/assets/ctrl-dpad-up.png" id="5_55237"]
 [ext_resource type="Texture2D" uid="uid://634p56yrv2hk" path="res://example/assets/ctrl-dpad-down.png" id="6_48h2c"]
 [ext_resource type="Texture2D" uid="uid://j3k2pn66whsa" path="res://example/assets/ctrl-dpad-left.png" id="7_aou2e"]
