@@ -25,7 +25,7 @@ script = ExtResource("1_y0l6f")
 
 [node name="InputController" type="Node" parent="."]
 script = ExtResource("2_goqi5")
-ui_inputs = Array[String](["joy_dpad_up"])
+ui_inputs = Array[String]([])
 unhandled_inputs = Array[String](["joy_*", "kb_*", "wasd_*"])
 
 [node name="JoyPad" type="Sprite2D" parent="."]

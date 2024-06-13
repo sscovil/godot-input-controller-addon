@@ -193,9 +193,9 @@ applied in the inspector section of the editor.
 
 ### process_input(event: InputEvent, actions: Array[StringName])
 
-This is the primary method that is used at runtime. It is called from each of the four input handler methods described
-[here](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work) (`_input()`,
-`_unhandled_input()`, `_unhandled_key_input()`, and `_unhandled_shortcuts()`), based on your
+This is the primary method that is used at runtime. It is called from each of the four input handler methods
+(`_input()`, `_unhandled_input()`, `_unhandled_key_input()`, and `_unhandled_shortcuts()`) described
+[here](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work), based on your
 [Input Handlers](#input-handlers-configuration) configuration settings.
 
 For each action in the given `actions` array, it will emit the appropriate `input_detected` signal, based on the given
