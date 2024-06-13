@@ -108,19 +108,15 @@ func get_ticks() -> float:
 	return float(Time.get_ticks_msec()) / 1000
 
 
-## Search a given list of actions and return the first one that matches a given event.
+## Search a given list of actions and return an array of actions that match a given event. An
+## InputEvent can match more than one action, because multiple actions can have the same keys,
+## joypad buttons, joystick inputs, etc. mapped to them.
 ## 
 ## @param event InputEvent: The event to check each action against.
 ## @param actions Array[StringName]: A list of actions to check.
 ## @return InputControllerAction: The first action that matches the event, or "" if no match found.
 func find_actions(event: InputEvent, actions: Array[StringName]) -> Array[StringName]:
-	var result: Array[StringName] = []
-	
-	for action in actions:
-		if event.is_action(action):
-			result.push_back(action)
-	
-	return result
+	return actions.filter(func (a): return event.is_action(a))
 
 
 ## Add each input action in a given list (or all actions from InputMap by default) to one of the
@@ -195,7 +191,7 @@ func map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get
 ## get_viewport().set_input_as_handled() to prevent the InputEvent from propagating.
 ## 
 ## @param event InputEvent: The event that triggered the action.
-## @param actions Array[StringName: The actions to process.
+## @param actions Array[StringName]: The actions to process.
 ## @return bool: True if the event was processed; otherwise, false.
 func process_input(event: InputEvent, actions: Array[StringName]) -> bool:
 	if !actions:
@@ -255,7 +251,17 @@ func _determine_input_type(action_state: ActionState, delta: float) -> InputType
 	return InputType.HOLD
 
 
+## Process an event if it matches a given action. If the action is just pressed and it is not
+## already active, emit the `input_detected` signal with `InputType.ACTIVE`, which indicates that
+## the type of action has not yet been determined. If the action is just released and was active,
+## mark it as inactive and emit the `input_detected` signal with the determined input type.
+## 
+## @param event InputEvent: The event that triggered the action.
+## @param action StringName: The actions to process.
 func _process_action(event: InputEvent, action: StringName) -> void:
+	if !event.is_action(action):
+		return
+	
 	var action_state: ActionState = _actions[action]
 	
 	# If the action just started, set last_activated_at and notify event listeners.

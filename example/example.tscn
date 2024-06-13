@@ -20,12 +20,12 @@
 [ext_resource type="Texture2D" uid="uid://ebnj1u3q8g5h" path="res://example/assets/ctrl-button-power.png" id="18_yk64a"]
 [ext_resource type="Texture2D" uid="uid://b82nhjg24rte1" path="res://example/assets/ctrl-button-touchpad.png" id="19_wrjxu"]
 
-[node name="Root" type="Node2D"]
+[node name="Example" type="Node2D"]
 script = ExtResource("1_y0l6f")
 
 [node name="InputController" type="Node" parent="."]
 script = ExtResource("2_goqi5")
-ui_inputs = Array[String]([])
+ui_inputs = Array[String](["joy_dpad_up"])
 unhandled_inputs = Array[String](["joy_*", "kb_*", "wasd_*"])
 
 [node name="JoyPad" type="Sprite2D" parent="."]

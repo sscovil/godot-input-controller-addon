@@ -22,12 +22,14 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Methods](#methods)
+- [Signals](#signals)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 
 ## Version
 
-InputController **requires at least Godot 4.2**.
+InputController **requires at least Godot 4.2**. It may work with earlier versions, but they have not been tested.
 
 ## Installation
 
@@ -58,7 +60,7 @@ const InputType = InputController.InputType
 @onready var input_controller = $InputController
 
 func _ready():
-	input_controller.connect("input_detected", _on_input_detected)
+	input_controller.input_detected.connect(_on_input_detected)
 
 func _on_input_detected(event: InputEvent, action: String, input_type: InputType):
 	match input_type:
@@ -74,22 +76,7 @@ func _on_input_detected(event: InputEvent, action: String, input_type: InputType
 			prints(action, "held")
 ```
 
-The signal will send the `InputEvent` that triggered the action, the name of the action that was triggered, and the type
-of input that was detected. The `InputType` enum has the following values:
-
-- `ACTIVE`: An indication that an input event has just begun.
-- `TAP`: A quick press and release of a button.
-- `DOUBLE_TAP`: Two quick presses and releases of a button.
-- `PRESS`: A standard press of a button.
-- `LONG_PRESS`: A press and slightly prolonged hold of a button.
-- `HOLD`: A press and hold of a button that has exceeded the long press duration.
-- `CANCEL`: An indication that an input event has been canceled.
-
-The `InputType.ACTIVE` value is used to indicate that an input event has just begun (i.e. the action was just pressed).
-The actual type of input will be determined when the button is released.
-
-The `InputType.CANCEL` value is used to negate the first tap in a double tap sequence. The signal for the first tap
-cannot be emitted until either a second tap is detected, or the double tap delay has been exceeded.
+See the [Signals](#signals) section below, for more information on the `input_detected` signal.
 
 ## Configuration
 
@@ -178,6 +165,72 @@ only using the `InputController` for logging, analytics, or some other observati
 |----------------------|-------------------------|---------|---------|
 | Set Input as Handled | `set_input_as_handled`  |  `bool` | `true`  |
 
+## Methods)
+
+The `InputController` node has the following methods:
+
+- `get_ticks()`
+- `find_actions(event: InputEvent, actions: Array[StringName])`
+- `map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get_actions())`
+- `process_input(event: InputEvent, actions: Array[StringName])`
+
+### get_ticks()
+
+This is a helper method that returns `Time.get_ticks_msec()` in seconds, as a `float`. It is used internally to compare
+the time elapsed between inputs with the [Input Timing](#input-timing-configuration) configuration values, to determine
+the type of an input action. 
+
+### find_actions(event: InputEvent, actions: Array[StringName])
+
+This is a helper method that filters a given array of actions, returning a new array that contains any actions that
+evaluate to `true` when passed to `event.is_action()` for the given `InputEvent`.
+
+### map_actions_to_handlers(available_actions: Array[StringName] = InputMap.get_actions())
+
+This method is used internally to apply the [Input Handlers](#input-handlers-configuration) configuration values.
+You should not need to call it manually; if you do, be aware that it will clear and override the configuration settings
+applied in the inspector section of the editor.
+
+### process_input(event: InputEvent, actions: Array[StringName])
+
+This is the primary method that is used at runtime. It is called from each of the four input handler methods described
+[here](https://docs.godotengine.org/en/stable/tutorials/inputs/inputevent.html#how-does-it-work) (`_input()`,
+`_unhandled_input()`, `_unhandled_key_input()`, and `_unhandled_shortcuts()`), based on your
+[Input Handlers](#input-handlers-configuration) configuration settings.
+
+For each action in the given `actions` array, it will emit the appropriate `input_detected` signal, based on the given
+`InputEvent`. Then, it will optionally mark the event as handled, based on your
+[Event Propagation](#event-propagation-configuration) configuration settings.
+
+## Signals
+
+The `InputController` node emits the following signal:
+
+- `input_detected(event: InputEvent, action: StringName, type: InputController.InputType)`
+
+The signal will include three arguments:
+
+1. `event`: The `InputEvent` that triggered the action
+2. `action`: The name of the action that was triggered
+3. `type`: The `InputType` of input that was detected.
+
+The `InputType` enum has the following values:
+
+- `ACTIVE`: An input action has just begun; its type has not yet determined.
+- `TAP`: A quick press and release of a button.
+- `DOUBLE_TAP`: Two quick presses and releases of a button.
+- `PRESS`: A standard press of a button.
+- `LONG_PRESS`: A press and slightly prolonged hold of a button.
+- `HOLD`: A press and hold of a button that has exceeded the long press duration.
+- `CANCEL`: An input action that has been canceled and can be ignored.
+
+The `InputType.ACTIVE` value is used to indicate that an input event has just begun (i.e. the action was just pressed).
+The actual type of input will be determined when the button is released.
+
+The `InputType.CANCEL` value is used to negate the first tap in a double tap sequence. The signal for the first tap
+cannot be emitted until either a second tap is detected or the double tap delay has been exceeded; if a second tap
+is detected, the first tap gets canceled and can be ignored.
+
 ## Troubleshooting
 
 ### Input actions are not being detected
@@ -190,7 +243,11 @@ then you know the actions are being handled elsewhere in your code before they r
 
 ### Input actions are being handled by the wrong handler method
 
-This is likely an issue with your [Input Handlers Configuration](#input-handlers-configuration).
+**IMPORTANT:** Be sure you are using a version of InputController >= `1.0.0`. In earlier versions, there was a bug that
+prevented custom configurations from being recognized.
+
+If you are using a version >= `1.0.0`, this is likely an issue with your
+[Input Handlers Configuration](#input-handlers-configuration).
 
 When using wildcards, be aware that the order of the handlers in the list matters. The first handler that matches an
 action will be the one that ends up handling it.
