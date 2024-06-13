@@ -160,12 +160,12 @@ other nodes by calling `get_viewport().set_input_as_handled()`.
 
 To allow the event to propagate after handling it, set this value to `false`. You might want to do this if you are
 only using the `InputController` for logging, analytics, or some other observational behavior.
- 
+
 | Inspector Label      | Property Name           | Type    | Default |
 |----------------------|-------------------------|---------|---------|
 | Set Input as Handled | `set_input_as_handled`  |  `bool` | `true`  |
 
-## Methods)
+## Methods
 
 The `InputController` node has the following methods:
 
@@ -178,7 +178,7 @@ The `InputController` node has the following methods:
 
 This is a helper method that returns `Time.get_ticks_msec()` in seconds, as a `float`. It is used internally to compare
 the time elapsed between inputs with the [Input Timing](#input-timing-configuration) configuration values, to determine
-the type of an input action. 
+the type of input action.
 
 ### find_actions(event: InputEvent, actions: Array[StringName])
 
