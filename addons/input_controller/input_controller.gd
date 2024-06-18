@@ -83,6 +83,12 @@ func _ready() -> void:
 	map_actions_to_handlers()
 
 
+func _exit_tree() -> void:
+	_handlers.free()
+	for action in _actions.values():
+		action.free()
+
+
 func _input(event: InputEvent) -> void:
 	if _handlers.has_actions("_input"):
 		process_input(event, find_actions(event, _handlers.get_actions("_input")))
