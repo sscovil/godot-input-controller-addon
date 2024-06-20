@@ -216,12 +216,12 @@ The signal will include three arguments:
 
 The `InputType` enum has the following values:
 
-- `ACTIVE`: An input action has just begun; its type has not yet determined.
+- `ACTIVE`: An input action has just begun; its type is not yet determined.
 - `TAP`: A quick press and release of a button.
-- `DOUBLE_TAP`: Two quick presses and releases of a button.
+- `DOUBLE_TAP`: Two quick, consecutive taps of a button.
 - `PRESS`: A standard press of a button.
 - `LONG_PRESS`: A press and slightly prolonged hold of a button.
-- `HOLD`: A press and hold of a button that has exceeded the long press duration.
+- `HOLD`: A press and hold of a button that exceeded the long press duration.
 - `CANCEL`: An input action that has been canceled and can be ignored.
 
 The `InputType.ACTIVE` value is used to indicate that an input event has just begun (i.e. the action was just pressed).
